@@ -47,11 +47,34 @@
                 response.json().then(data => {
                     const productsHtml = data.map(products => `
                     <li>
-                        ${products.name} - ${products.brand} - ${products.price}
-                        </li>
-                        `).join('')
+                        ${products.name} - ${products.brand} - ${products.price} - 
+                        <a href="#" class="botao-excluir" data-id="${products._id}">[excluir]</a>
+                    </li>
+                    `).join('')
                         
-                        productsList.innerHTML = productsHtml
+                    productsList.innerHTML = productsHtml
+
+                    const botoesExcluir = document.querySelectorAll('.botao-excluir')
+                    botoesExcluir.forEach(botao => {
+                        botao.onclick = function(e){
+                            e.preventDefault()
+
+                            const id = this.dataset.id
+
+                            fetch(`${API_URL}/${id}`, {
+                                method: 'DELETE',
+                            }).then(response => {
+                                response.json().then(data => {
+                                    if (data.message === "success"){
+                                        obterLista()
+                                        alert('Produto Excluído com Sucesso')
+                                    } else {
+                                        alert('Ocorreu um erro, tente novamente')
+                                    }
+                                })
+                            })
+                        }
+                    });
                         
                     })
                 })
@@ -79,7 +102,7 @@
                 })
                 }).then(res => {
                     res.json().then(data => {
-                        if (data.message === "Sucess"){
+                        if (data.message === "success"){
                             form.reset()
                             obterLista() 
                             alert('Cadastro realizado com sucesso!')
